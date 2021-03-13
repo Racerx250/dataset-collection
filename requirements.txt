@@ -1,0 +1,7 @@
+Google-Images-Search==1.3.6
+pathlib
+typing
+datetime
+Pillow
+json
+numpy
