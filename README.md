@@ -5,7 +5,9 @@ UC San Diego research project
 Queries for the given terms, stores in a given directory, and then returns a list of numpy arrays where each numpy array is a 3D representation of an image (height-width-RGB). 
 
 Main function is given by:
+
 `def search_store_query(search: str, num: int, dir_name: str = None, options:dict = {}) -> None:`
+
 Where:
 - *search* is the string you would input into Google to find the images
 - *num* is the amount of images
@@ -18,4 +20,5 @@ Ping lclawren@eng.ucsd.edu for API and CX key, or just message me in Slack.
 
 ### NOTES
 Easy installation:
+
 `pip install -r requirements.txt`
