@@ -28,6 +28,8 @@ Ping lclawren@eng.ucsd.edu for API and CX key, or just message me in Slack. Then
 
 `export GCS_DEVELOPER_KEY = *insert developer key`
 `export GCS_CX = *insert index key`
+`export FLICKR_KEY = *insert index key`
+`export FLICKR_SECRET = *insert index key`
 
 ### NOTES
 Easy installation:
