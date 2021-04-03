@@ -12,7 +12,7 @@ import json
 gis = GoogleImagesSearch(os.environ.get('GCS_DEVELOPER_KEY'), os.environ.get('GCS_CX'))
 my_bytes_io = BytesIO()
 
-def search_store_query(search: str, num: int, dir_name: str = None, options:dict = {}) -> None:
+def search_store_query_google(search: str, num: int, dir_name: str = None, options:dict = {}) -> None:
     dir_path = dir_name
     if not dir_path: 
         cur_time = datetime.datetime.now()
@@ -51,4 +51,4 @@ def search_store_query(search: str, num: int, dir_name: str = None, options:dict
     # return np.stack(X, axis=3)
     return X
 
-search_store_query('dog', 2)
+# search_store_query_google('dog', 2)

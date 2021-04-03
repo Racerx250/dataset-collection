@@ -16,9 +16,13 @@ Where:
 
 #### Google Image Searches
 Max queries per day is 100 without a pricing plan. Above this, it's $5 per 1000 queries. We may be able to get this funding from the department.
-Ping lclawren@eng.ucsd.edu for API and CX key, or just message me in Slack.
+Ping lclawren@eng.ucsd.edu for API and CX key, or just message me in Slack. Then, you can add the keys to your local enviroment using the following commands (for linux):
+
+`export GCS_DEVELOPER_KEY = *insert developer key`
+`export GCS_CX = *insert index key`
 
 ### NOTES
 Easy installation:
 
 `pip install -r requirements.txt`
+

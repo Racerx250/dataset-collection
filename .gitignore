@@ -1,0 +1,12 @@
+.idea
+.vscode/*
+node_modules/*
+__tests__/data/dataset/*
+**/__pycache__
+
+# python package
+dist/
+build/
+
+# vscode 
+.vscode/
