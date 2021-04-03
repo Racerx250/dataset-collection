@@ -123,7 +123,7 @@ def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, outp
         except Exception as e:
             continue
 
-def search_store_query_flickr(search: str, num: int, dir_name: str = None, dim: tuple = (100, 100)):
+def search_store_query_flickr(search: str, max_pages: int, dir_name: str = None, dim: tuple = None):
     dir_path = dir_name
     if not dir_path: 
         cur_time = datetime.datetime.now()
@@ -138,11 +138,7 @@ def search_store_query_flickr(search: str, num: int, dir_name: str = None, dim: 
     if qs is None and qg is None:
         sys.exit('Must specify a search term or group id')
 
-    try:
-        bbox = args.bbox.split(' ')
-    except Exception as e:
-        bbox = None
-
+    bbox = dim
     if bbox and len(bbox) != 4:
         bbox = None
 
@@ -153,11 +149,6 @@ def search_store_query_flickr(search: str, num: int, dir_name: str = None, dim: 
     if bbox:
         print('Within', bbox)
 
-    max_pages = None
-    if args.max_pages:
-        max_pages = int(args.max_pages)
-
-    if args.start_page:
-        start_page = int(args.start_page)
+    start_page = 1
 
     search(qs, qg, bbox, original, max_pages, start_page, output_dir)
