@@ -5,6 +5,8 @@ import json
 import re
 import os
 import requests
+import datetime
+import pathlib
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
@@ -40,10 +42,11 @@ def get_group_id_from_url(url):
     return results['group']['id']
 
 
-def get_photos(qs, qg, page=1, original=False, bbox=None):
+def get_photos(qs, qg, page=1, original=False, bbox=None, num_images=500):
+    if num_images > 500 or num_images < 1: raise Exception('num_images is invalid')
     params = {
         'content_type': '7',
-        'per_page': '500',
+        'per_page': str(num_images),
         'media': 'photos',
         'format': 'json',
         'advanced': 1,
@@ -71,7 +74,7 @@ def get_photos(qs, qg, page=1, original=False, bbox=None):
     return results["photos"]
 
 
-def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, output_dir='images'):
+def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, output_dir='images', images_per_page=500):
     # create a folder for the query if it does not exist
     foldername = os.path.join(output_dir, re.sub(r'[\W]', '_', qs if qs is not None else "group_%s"%qg))
     if bbox is not None:
@@ -88,20 +91,21 @@ def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, outp
         photos = []
         current_page = start_page
 
-        results = get_photos(qs, qg, page=current_page, original=original, bbox=bbox)
+        results = get_photos(qs, qg, page=current_page, original=original, bbox=bbox, num_images=images_per_page)
         if results is None:
             return
 
         total_pages = results['pages']
         if max_pages is not None and total_pages > start_page + max_pages:
-            total_pages = start_page + max_pages
+            # total_pages = start_page + max_pages
+            total_pages = max_pages
 
         photos += results['photo']
 
         while current_page < total_pages:
             print('downloading metadata, page {} of {}'.format(current_page, total_pages))
             current_page += 1
-            photos += get_photos(qs, qg, page=current_page, original=original, bbox=bbox)['photo']
+            photos += get_photos(qs, qg, page=current_page, original=original, bbox=bbox, num_images=images_per_page)['photo']
             time.sleep(0.5)
 
         with open(jsonfilename, 'w') as outfile:
@@ -123,14 +127,15 @@ def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, outp
         except Exception as e:
             continue
 
-def search_store_query_flickr(search: str, max_pages: int, dir_name: str = None, dim: tuple = None):
+def search_store_query_flickr(query: str, max_pages: int, num_images:int = 500, dir_name:str = None, dim:tuple = None):
     dir_path = dir_name
+
     if not dir_path: 
         cur_time = datetime.datetime.now()
-        name = 'dataset-' + search + '_' + cur_time.strftime("%m-%d-%YT%H:%M:%S")
+        name = 'dataset-' + query + '_' + cur_time.strftime("%m-%d-%YT%H:%M:%S")
         dir_path = str(pathlib.Path(__file__).parent.parent.absolute()) + '/' + name
         
-    qs = search
+    qs = query
     qg = None
     original = None
     output_dir = dir_path
@@ -151,4 +156,6 @@ def search_store_query_flickr(search: str, max_pages: int, dir_name: str = None,
 
     start_page = 1
 
-    search(qs, qg, bbox, original, max_pages, start_page, output_dir)
+    search(qs, qg, bbox, original, max_pages, start_page, output_dir, images_per_page=num_images)
+
+# search_store_query_flickr('border collie', 1, num_images=10)
