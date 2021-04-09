@@ -51,4 +51,4 @@ def search_store_query_google(search: str, num: int, dir_name: str = None, optio
     # return np.stack(X, axis=3)
     return X
 
-search_store_query_google('dog', 2)
+# search_store_query_google('dog', 2)

@@ -68,17 +68,21 @@ def get_photos(qs, qg, page=1, original=False, bbox=None, num_images=500):
         params['bbox'] = ','.join(bbox)
 
     results = requests.get('https://api.flickr.com/services/rest', params=params).json()
+    print(results)
     if "photos" not in results:
         print(results)
         return None
     return results["photos"]
 
 
-def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, output_dir='images', images_per_page=500):
+def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, output_dir='images', images_per_page=500, use_subfolder=True):
     # create a folder for the query if it does not exist
     foldername = os.path.join(output_dir, re.sub(r'[\W]', '_', qs if qs is not None else "group_%s"%qg))
     if bbox is not None:
         foldername += '_'.join(bbox)
+
+    if not use_subfolder: foldername = output_dir
+
 
     if not os.path.exists(foldername):
         os.makedirs(foldername)
@@ -122,12 +126,14 @@ def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, outp
             url = photo.get('url_o' if original else 'url_l')
             extension = url.split('.')[-1]
             localname = os.path.join(foldername, '{}.{}'.format(photo['id'], extension))
+            print(foldername)
+            print(localname)
             if not os.path.exists(localname):
                 download_file(url, localname)
         except Exception as e:
             continue
 
-def search_store_query_flickr(query: str, max_pages: int, num_images:int = 500, dir_name:str = None, dim:tuple = None):
+def search_store_query_flickr(query: str, max_pages: int, num_images:int = 500, dir_name:str = None, dim:tuple = None, use_subfolder:bool = True):
     dir_path = dir_name
 
     if not dir_path: 
@@ -156,6 +162,6 @@ def search_store_query_flickr(query: str, max_pages: int, num_images:int = 500, 
 
     start_page = 1
 
-    search(qs, qg, bbox, original, max_pages, start_page, output_dir, images_per_page=num_images)
+    search(qs, qg, bbox, original, max_pages, start_page, output_dir, images_per_page=num_images, use_subfolder=use_subfolder)
 
-# search_store_query_flickr('border collie', 1, num_images=10)
+search_store_query_flickr('beagle dog', 1, num_images=10)
