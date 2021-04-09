@@ -37,18 +37,4 @@ def search_store_query_google(search: str, num: int, dir_name: str = None, optio
     except:
         raise Exception('error writing to file')
 
-    X = []
-    for _ in range(int(num / 10) + 1):
-        for image in gis.results():
-            my_bytes_io.seek(0)
-            image.copy_to(my_bytes_io)
-            my_bytes_io.seek(0)
-
-            data = np.asarray(Image.open(my_bytes_io))
-            X.append(data)
-        gis.next_page()
-    
-    # return np.stack(X, axis=3)
-    return X
-
 # search_store_query_google('dog', 2)

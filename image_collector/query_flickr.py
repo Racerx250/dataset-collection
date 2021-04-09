@@ -43,10 +43,10 @@ def get_group_id_from_url(url):
 
 
 def get_photos(qs, qg, page=1, original=False, bbox=None, num_images=500):
-    if num_images > 500 or num_images < 1: raise Exception('num_images is invalid')
+    if num_images < 1: raise Exception('num_images is invalid')
     params = {
         'content_type': '7',
-        'per_page': str(num_images),
+        'per_page': str(min(500, num_images)),
         'media': 'photos',
         'format': 'json',
         'advanced': 1,
@@ -68,21 +68,19 @@ def get_photos(qs, qg, page=1, original=False, bbox=None, num_images=500):
         params['bbox'] = ','.join(bbox)
 
     results = requests.get('https://api.flickr.com/services/rest', params=params).json()
-    print(results)
     if "photos" not in results:
         print(results)
         return None
     return results["photos"]
 
 
-def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, output_dir='images', images_per_page=500, use_subfolder=True):
+def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, output_dir='images', num_images=500, use_subfolder=True):
     # create a folder for the query if it does not exist
     foldername = os.path.join(output_dir, re.sub(r'[\W]', '_', qs if qs is not None else "group_%s"%qg))
     if bbox is not None:
         foldername += '_'.join(bbox)
 
     if not use_subfolder: foldername = output_dir
-
 
     if not os.path.exists(foldername):
         os.makedirs(foldername)
@@ -95,7 +93,7 @@ def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, outp
         photos = []
         current_page = start_page
 
-        results = get_photos(qs, qg, page=current_page, original=original, bbox=bbox, num_images=images_per_page)
+        results = get_photos(qs, qg, page=current_page, original=original, bbox=bbox, num_images=num_images)
         if results is None:
             return
 
@@ -105,13 +103,16 @@ def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, outp
             total_pages = max_pages
 
         photos += results['photo']
-
-        while current_page < total_pages:
-            print('downloading metadata, page {} of {}'.format(current_page, total_pages))
+        downloaded_images = 0
+        while downloaded_images < num_images and current_page < total_pages:
+            print('downloading metadata, page {} of {}. Stored {} images out of required {}'.format(current_page, total_pages, downloaded_images, num_images))
+            temp = get_photos(qs, qg, page=current_page, original=original, bbox=bbox, num_images=num_images)['photo']
             current_page += 1
-            photos += get_photos(qs, qg, page=current_page, original=original, bbox=bbox, num_images=images_per_page)['photo']
             time.sleep(0.5)
-
+            
+            for photo in temp:
+                if download_image(photo, foldername, original): downloaded_images += 1
+        print('Downloaded {} images after searching through {} pages'.format(downloaded_images, current_page - 1))
         with open(jsonfilename, 'w') as outfile:
             json.dump(photos, outfile)
 
@@ -119,21 +120,21 @@ def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, outp
         with open(jsonfilename, 'r') as infile:
             photos = json.load(infile)
 
+def download_image(photo, foldername, original):
     # download images
-    print('Downloading images')
-    for photo in tqdm(photos):
-        try:
-            url = photo.get('url_o' if original else 'url_l')
-            extension = url.split('.')[-1]
-            localname = os.path.join(foldername, '{}.{}'.format(photo['id'], extension))
-            print(foldername)
-            print(localname)
-            if not os.path.exists(localname):
-                download_file(url, localname)
-        except Exception as e:
-            continue
+    try:
+        url = photo.get('url_o' if original else 'url_l')
+        extension = url.split('.')[-1]
+        localname = os.path.join(foldername, '{}.{}'.format(photo['id'], extension))
 
-def search_store_query_flickr(query: str, max_pages: int, num_images:int = 500, dir_name:str = None, dim:tuple = None, use_subfolder:bool = True):
+        if not os.path.exists(localname):
+            download_file(url, localname)
+        return True
+    except Exception as e:
+        return False
+
+
+def search_store_query_flickr(query: str, max_pages:int = 1000, num_images:int = 500, dir_name:str = None, dim:tuple = None, use_subfolder:bool = True):
     dir_path = dir_name
 
     if not dir_path: 
@@ -162,6 +163,6 @@ def search_store_query_flickr(query: str, max_pages: int, num_images:int = 500, 
 
     start_page = 1
 
-    search(qs, qg, bbox, original, max_pages, start_page, output_dir, images_per_page=num_images, use_subfolder=use_subfolder)
+    search(qs, qg, bbox, original, max_pages, start_page, output_dir, num_images=num_images, use_subfolder=use_subfolder)
 
-search_store_query_flickr('beagle dog', 1, num_images=10)
+# search_store_query_flickr('beagle dog', num_images=10)
