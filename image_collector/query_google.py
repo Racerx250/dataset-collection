@@ -9,9 +9,6 @@ import typing
 import datetime
 import json
 
-gis = GoogleImagesSearch(os.environ.get('GCS_DEVELOPER_KEY'), os.environ.get('GCS_CX'))
-my_bytes_io = BytesIO()
-
 def search_store_query_google(search: str, num: int, dir_name: str = None, options:dict = {}) -> None:
     dir_path = dir_name
     if not dir_path: 
@@ -27,6 +24,11 @@ def search_store_query_google(search: str, num: int, dir_name: str = None, optio
         'imgSize': options.get('imgSize', 'LARGE'),
     }
 
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+
+
+    gis = GoogleImagesSearch(os.environ.get('GCS_DEVELOPER_KEY'), os.environ.get('GCS_CX'))
     gis.search(search_params=_search_params, path_to_dir=dir_path, width=options.get('dim', 500), height=options.get('dim', 500))
 
     try:
@@ -34,7 +36,8 @@ def search_store_query_google(search: str, num: int, dir_name: str = None, optio
         json_formatted_str = json.dumps(_search_params, indent=2)
         file.write(json_formatted_str)
         file.close()
-    except:
+    except Exception as e:
+        print(e)
         raise Exception('error writing to file')
 
 # search_store_query_google('dog', 2)

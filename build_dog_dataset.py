@@ -25,8 +25,8 @@ classes = [
 for label in classes:
     print('Starting Flickr scrape of ' + label + '.')
     flickr_dir = dataset_name + '/' + label.replace(' ', '_') + '/flickr'
-    search_store_query_flickr(label + ' dog', dir_name=flickr_dir, num_images=80, use_subfolder=False)
+    search_store_query_flickr(label + ' dog', dir_name=flickr_dir, num_images=100, use_subfolder=False)
     
     print('Starting Google scrape of ' + label + '.')
     google_dir = dataset_name + '/' + label.replace(' ', '_') + '/google'
-    search_store_query_google(label + ' dog', 80, dir_name=google_dir)
+    search_store_query_google(label + ' dog', 100, dir_name=google_dir)
