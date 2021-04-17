@@ -168,7 +168,7 @@ def get_database(db_name:str, dir_name:str = None, classes:typing.List[str] = []
                 'image_num': image_num,
                 'relative_path': join(source_dir, f),
                 'full_path': None
-            } for f in listdir(source_dir) if isfile(join(source_dir, f))])
+            } for f in listdir(source_dir) if isfile(join(source_dir, f)) and f[-5:] != '.json'])
             image_num += 1
 
         class_image_map[class_dir] = image_names
@@ -179,6 +179,7 @@ def create_dirty_database(db_name:str, dir_name:str = None, classes:typing.List[
     database_interface = get_database(db_name, dir_name=dir_name, classes=classes, sources=sources)
     return DirtyDatabase(database_interface)
 
-temp = create_dirty_database('dataset_dev')
-print(temp.oracle_labels([0]))
+# temp = get_database('dataset_dogs_small_dirty')
+# print(temp.get_database_dict())
+# print(temp.oracle_labels([0]))
 # print(temp.get_image_by_class_num('beagle', 0))
