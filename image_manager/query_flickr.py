@@ -10,6 +10,11 @@ import pathlib
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
+from ratelimit import RateLimitDecorator, limits, sleep_and_retry
+
+ratelimiter = RateLimitDecorator(calls=1, period=1)
+requests.get = sleep_and_retry(ratelimiter(requests.get))
+
 # 
 # ALL CREDIT FOR WORK IN THIS FILE GOES DIRECTLY TO THE REPOSITORY:
 # https://github.com/antiboredom/flickr-scrape
@@ -108,10 +113,9 @@ def search(qs, qg, bbox=None, original=False, max_pages=None, start_page=1, outp
             print('downloading metadata, page {} of {}. Stored {} images out of required {}'.format(current_page, total_pages, downloaded_images, num_images))
             temp = get_photos(qs, qg, page=current_page, original=original, bbox=bbox, num_images=num_images)['photo']
             current_page += 1
-            time.sleep(0.5)
             
             for photo in temp:
-                if download_image(photo, foldername, original): downloaded_images += 1
+                if downloaded_images < num_images and download_image(photo, foldername, original): downloaded_images += 1
         print('Downloaded {} images after searching through {} pages'.format(downloaded_images, current_page - 1))
         with open(jsonfilename, 'w') as outfile:
             json.dump(photos, outfile)
