@@ -6,7 +6,6 @@ import dogData
 from matplotlib import pyplot as plt
 import torchvision.models as models
 from collections import defaultdict
-import custom
 from torchvision import transforms as transforms
 from torchvision import datasets as datasets
 
@@ -140,33 +139,32 @@ if __name__ == '__main__':
 
     
     # load the datasets
-    '''
+    
     train_dataset = dogData.Dog_Train_Dataset('train_list.txt')
     valid_dataset = dogData.Dog_Test_Dataset('val_list.txt')
     test_dataset = dogData.Dog_Test_Dataset('test_list.txt')
-    '''
     
     train_transform = transforms.Compose([ 
         transforms.Resize(256), 
         transforms.RandomCrop(224), 
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        transforms.ToTensor()])
+        #transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
     test_transform = transforms.Compose([ 
         transforms.Resize(256), 
         transforms.CenterCrop(224), 
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        transforms.ToTensor()])
+        #transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
-    train_dataset= datasets.ImageFolder('TrainImages/', transform=train_transform)
-    valid_dataset= datasets.ImageFolder('ValImages/', transform=test_transform)
-    test_dataset= datasets.ImageFolder('TestImages/', transform=test_transform)
+    #train_dataset= datasets.ImageFolder('TrainImages/', transform=train_transform)
+    #valid_dataset= datasets.ImageFolder('ValImages/', transform=test_transform)
+    #test_dataset= datasets.ImageFolder('TestImages/', transform=test_transform)
 
     #train_dataset, valid_dataset, test_dataset = torch.utils.data.random_split(total_dataset, [14406, 3087, 3087])
 
     # dataloaders for the datasets
     dataloaders = defaultdict(DataLoader)
-    dataloaders['train'] =  DataLoader(train_dataset, shuffle=True, batch_size = 8, num_workers=4)
+    dataloaders['train'] =  DataLoader(train_dataset, shuffle=True, batch_size = 64, num_workers=4)
     dataloaders['validate'] =  DataLoader(valid_dataset, shuffle=False, num_workers=4)
     dataloaders['test'] =  DataLoader(test_dataset, shuffle=False, num_workers=4)
 
