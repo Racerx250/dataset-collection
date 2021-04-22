@@ -7,6 +7,7 @@ json
 numpy
 ratelimit
 typing
+torch
 beautifulsoup4==4.6.0
 certifi==2017.11.5
 chardet==3.0.4

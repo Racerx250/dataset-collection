@@ -10,6 +10,7 @@ from os import listdir
 from os.path import isfile, join
 from PIL import Image
 from numpy import asarray
+from typing import Union
 
 PROJECT_DIR = str(pathlib.Path(__file__).parent.absolute())
 
@@ -54,7 +55,7 @@ class DatabaseInterface:
 
         return new_num
 
-    def get_image(self, image:dict) -> np.ndarray:
+    def get_image(self, image:dict, raw:bool = False) -> Union[Image.Image, np.ndarray]:
         img = None
         try:
             if isinstance(image.get('full_path'), str): img = Image.open(image.get('full_path'))
@@ -64,18 +65,20 @@ class DatabaseInterface:
         except Exception as e:
             print(traceback.format_exc())
             return None
-        
+
+        if raw: return img
+
         return np.asarray(img)
         
-    def get_images(self, images:typing.List[dict]) -> typing.List[np.ndarray]:
+    def get_images(self, images:typing.List[dict], raw:bool = False) -> Union[typing.List[Image.Image], typing.List[np.ndarray]]:
         np_images = []
         for image in images:
-            img = self.get_image(image)
+            img = self.get_image(image, raw=raw)
             if img is not None: np_images.append(img)
 
         return np_images
 
-    def get_image_by_class_num(self, class_name, num) -> np.ndarray:
+    def get_image_by_class_num(self, class_name:str, num:int, raw:bool = False) -> Union[typing.List[Image.Image], np.ndarray]:
         image_dict = None
         try:
             image_dict = self.database_dict[class_name][num]
@@ -87,16 +90,16 @@ class DatabaseInterface:
             print(f'{self.db_name}: {class_name}, {num} not found! (err code: 2)')
             return None
 
-        return self.get_image(image_dict)
+        return self.get_image(image_dict, raw=raw)
 
-    def get_images_by_class_num(self, images:typing.List[dict]) -> typing.List[np.ndarray]:
+    def get_images_by_class_num(self, images:typing.List[dict], raw:bool = False) -> Union[typing.List[Image.Image], typing.List[np.ndarray]]:
         np_images = []
         for image in images:
             if 'class' not in image or 'num' not in image: 
                 print(f'{image} is not well formatted')
                 continue
             
-            img = get_image_by_class_num(image.get('class'), image.get('num'))
+            img = get_image_by_class_num(image.get('class'), image.get('num'), raw=True)
             if img is not None: np_images.append(img)
 
         return np_images
@@ -104,7 +107,7 @@ class DatabaseInterface:
     def copy(self):
         return DatabaseInterface()
 
-class DirtyDatabase:
+class BlindDatabase:
     db_interface = None
     size = 0
     num_to_image_list = None
@@ -117,7 +120,12 @@ class DirtyDatabase:
 
         self.num_to_image_list = [image_dict  for label in db_dict for image_dict in db_dict[label]]
         self.label_list = [label for label in db_dict for image_dict in db_dict[label]]
-        random.shuffle(self.num_to_image_list)
+
+    def get_num_images(self) -> int:
+        return len(self.num_to_image_list)
+
+    def get_labels(self) -> typing.List:
+        return list(set(self.oracle_labels(list(range(self.get_num_images())))))
 
     def oracle_label(self, num:int) -> str:
         if num > len(self.num_to_image_list) - 1: 
@@ -125,26 +133,31 @@ class DirtyDatabase:
         
         return self.label_list[num]
 
-    def oracle_labels(self, nums:typing.List[int]) -> typing.List[str]:
+    def oracle_labels(self, nums:typing.List[int]) -> typing.List:
         if not set(nums).issubset(set(range(self.size))): 
             raise Exception(f"Input index array is invalid!")
         
         return [self.label_list[num] for num in nums]
 
-    def get_image_by_num(self, num:int) -> np.ndarray:
+    def get_image_by_num(self, num:int, raw:bool = True) -> Union[Image.Image, np.ndarray]:
         if num > self.size - 1: 
             raise Exception(f"{num} is larger than database size of {len(self.num_to_image_list)}! (remember 0 index)")
         
-        return self.db_interface.get_image(self.num_to_image_list[num])
+        return self.db_interface.get_image(self.num_to_image_list[num], raw=True)
 
-    def get_images_by_num(self, nums:typing.List[int]) -> typing.List[np.ndarray]:
+    def get_images_by_num(self, nums:typing.List[int], raw:bool) -> Union[Image.Image, typing.List[np.ndarray]]:
         if not set(nums).issubset(set(range(self.size))): 
             raise Exception(f"Input index array is invalid!")
 
-        return self.db_interface.get_images([self.num_to_image_list[num] for num in nums])
+        return self.db_interface.get_images([self.num_to_image_list[num] for num in nums], raw=True)
+
+class DirtyDatabase(BlindDatabase):
+    def __init__(self, db_interface:DatabaseInterface):
+        super().__init__(db_interface)
+        random.shuffle(self.label_list)
 
 def get_database(db_name:str, dir_name:str = None, classes:typing.List[str] = [], sources:typing.List[str] = []) -> DatabaseInterface:
-    path_to_dir = None
+    path_to_dir = dir_name
     if not dir_name: path_to_dir = db_name
 
     class_dirs = [f for f in listdir(path_to_dir) if os.path.isdir(join(path_to_dir, f))]
@@ -175,11 +188,38 @@ def get_database(db_name:str, dir_name:str = None, classes:typing.List[str] = []
 
     return DatabaseInterface(db_name, class_image_map, list(all_sources))
 
+def create_blind_database(db_name:str, dir_name:str = None, classes:typing.List[str] = [], sources:typing.List[str] = []) -> DirtyDatabase:
+    database_interface = get_database(db_name, dir_name=dir_name, classes=classes, sources=sources)
+    return BlindDatabase(database_interface)
+
 def create_dirty_database(db_name:str, dir_name:str = None, classes:typing.List[str] = [], sources:typing.List[str] = []) -> DirtyDatabase:
     database_interface = get_database(db_name, dir_name=dir_name, classes=classes, sources=sources)
     return DirtyDatabase(database_interface)
 
-# temp = get_database('dataset_dogs_small_dirty')
-# print(temp.get_database_dict())
-# print(temp.oracle_labels([0]))
-# print(temp.get_image_by_class_num('beagle', 0))
+def split_db_dict(db_name:str, dir_name:str = None, classes:typing.List[str] = [], sources:typing.List[str] = [], train_perc:float = 1) -> dict:
+    if train_perc < 0 or train_perc > 1: raise Exception('need 0 <= train_perc <= 1')
+
+    database_interface = get_database(db_name, dir_name=dir_name, classes=classes, sources=sources)
+    
+    train_dict = {}
+    test_dict = {}
+
+    db_dict = database_interface.get_database_dict()
+    for label in db_dict:
+        train_dict[label] = db_dict[label][0:int(len(db_dict[label])*train_perc)]
+        test_dict[label] = db_dict[label][int(len(db_dict[label])*train_perc):]
+
+    return BlindDatabase(DatabaseInterface(db_name + '_train', train_dict, sources=sources)), BlindDatabase(DatabaseInterface(db_name + '_test', test_dict, sources=sources))
+if __name__ == '__main__':
+    # NEED TO MOVE BELOW TO TESTS
+    pass
+
+    # temp = get_database('dataset_dogs_small_dirty')
+    # print(temp.get_image_by_class_num('border_collie_dog', 0, raw=True))
+
+    # temp = create_blind_database('dataset_dogs_small_dirty')
+    # print(temp.oracle_labels(list(range(10))))
+    # print(temp.get_image_by_num(5, raw=True))
+    # print(temp.get_labels())
+
+    # print(split_db_dict('dataset_dogs_small_dirty', train_perc=.7))
