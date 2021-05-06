@@ -95,6 +95,15 @@ def train_model(model, dataloaders, epochs, optimizer, criterion, patience) :
 
         print("epoch validate complete")
 
+        print("save check point")
+        save_dir = "check_point/"
+        torch.save({
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'loss': train_loss,
+        }, filename=os.path.join(save_dir, 'checkpoint_{}.tar'.format(epoch)))
+
         train_loss_total.append(train_loss / batch)
         val_loss_total.append(val_loss / batch_valid)
 

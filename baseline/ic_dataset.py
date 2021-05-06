@@ -36,9 +36,9 @@ class ICDataset(Dataset):
     def __getitem__(self, item):
         image = self.normalize(self.transform(self.blind_database.get_image_by_num(item).convert('RGB')))
         label = self.blind_database.oracle_label(item)
+        print(type(label))
         if self.use_int_labels: label = self.label_num_map[label]
-
-        return image, label
+        return image, 
 
 def get_icdataset(database_dir_path:str, db_name:str = None, use_int_labels:bool = False) -> ICDataset:
     return ICDataset(database_interface.create_blind_database(db_name or database_dir_path, dir_name=database_dir_path), use_int_labels=use_int_labels)
