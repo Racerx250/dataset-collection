@@ -43,6 +43,7 @@ class ICDataset(Dataset):
     def __getitem__(self, item):
         image = self.normalize(self.transform(self.blind_database.get_image_by_num(item).convert('RGB')))
         label = self.blind_database.oracle_label(item)
+        print(type(label))
         if self.use_int_labels: label = self.label_num_map[label]
 
         return image, torch.from_numpy(np.asarray(label))
