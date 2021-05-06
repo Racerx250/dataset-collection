@@ -7,4 +7,4 @@ sys.path.insert(0, PROJECT_DIR)
 from query_google import search_store_query_google
 from query_flickr import search_store_query_flickr
 
-from database_cli import get_database, create_dirty_database, DatabaseInterface, DirtyDatabase
+from database_interface import get_database, create_dirty_database, DatabaseInterface, DirtyDatabase

@@ -210,6 +210,7 @@ def split_db_dict(db_name:str, dir_name:str = None, classes:typing.List[str] = [
         test_dict[label] = db_dict[label][int(len(db_dict[label])*train_perc):]
 
     return BlindDatabase(DatabaseInterface(db_name + '_train', train_dict, sources=sources)), BlindDatabase(DatabaseInterface(db_name + '_test', test_dict, sources=sources))
+
 if __name__ == '__main__':
     # NEED TO MOVE BELOW TO TESTS
     pass

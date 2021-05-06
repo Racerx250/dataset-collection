@@ -7,7 +7,7 @@ cur_time = datetime.datetime.now()
 dataset_name = 'dataset_' + 'dogs' + '_' + cur_time.strftime("%m-%d-%YT%H:%M:%S")
 
 classes = open('image_manager/stanford_dogs_labels.txt').readlines()
-classes = [e.replace('\n', '').lower() for e in temp]
+classes = [e.replace('\n', '').lower() for e in classes]
 # classes = [
 #     'beagle',
 #     'border collie',
