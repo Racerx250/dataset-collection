@@ -4,7 +4,7 @@ from os.path import isfile, join
 
 from PIL import Image
 
-def clean(dir_name:str):
+def clean_dataset_dir(dir_name:str):
     path_to_dir = dir_name
     removed_num = 0
 
@@ -25,5 +25,5 @@ def clean(dir_name:str):
     print(f"Removed {removed_num} images.")
 
 if __name__ == '__main__':
-    # clean('dataset_stanford_dog_recreation')
+    # clean_dataset_dir('dataset_stanford_dog_recreation')
     pass
