@@ -8,6 +8,11 @@ import torchvision.models as models
 from collections import defaultdict
 from torchvision import transforms as transforms
 from torchvision import datasets as datasets
+import ic_dataset
+
+TEST_MODEL = True
+EPOCHS = 50
+PATIENCE = 3
 
 # xavier initialization
 def weights_init(m):
@@ -36,10 +41,7 @@ def graph(val_loss, train_loss, label):
     plt.xlabel("epoch size")
     plt.show()
 
-def train_model(model, dataloaders, epochs, optimizer, criterion, patience) :
-    train_dataloader = dataloaders['train']
-    val_dataloader = dataloaders['validate']
-    test_dataloader = dataloaders['test']
+def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs, optimizer, criterion, patience, test_model) :
     loss_increase = 0
     train_loss_total = []
     val_loss_total = []
@@ -64,12 +66,13 @@ def train_model(model, dataloaders, epochs, optimizer, criterion, patience) :
             label = label.cuda()
             optimizer.zero_grad()
             # forward pass
-            output = model(image)
+            outputs, aux_outputs = model(image)
+            loss1 = criterion(outputs, label)
+            loss2 = criterion(aux_outputs, label)
+            loss = loss1 + 0.4*loss2
             # get train accuracy
-            _, predicted = torch.max(output.data, 1)
+            _, predicted = torch.max(outputs, 1)
             train_acc += torch.sum(predicted == label)
-            # get train loss
-            loss = criterion(output, label)
             # backprop
             loss.backward()
             optimizer.step()
@@ -86,23 +89,17 @@ def train_model(model, dataloaders, epochs, optimizer, criterion, patience) :
                 image = image.cuda()
                 label = label.cuda()
                 # validate accuracy, loss
-                output_valid = model(image)
-                _, predicted = torch.max(output_valid.data, 1)
+    
+                outputs = model(image)
+                loss = criterion(outputs, label)
+                #output_valid = model(image)
+                
+                _, predicted = torch.max(outputs, 1)
                 valid_acc += torch.sum(predicted == label)
-                loss = criterion(output_valid, label)
                 val_loss += loss.item()
         model = model.train()
 
         print("epoch validate complete")
-
-        print("save check point")
-        save_dir = "check_point/"
-        torch.save({
-            'epoch': epoch,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'loss': train_loss,
-        }, filename=os.path.join(save_dir, 'checkpoint_{}.tar'.format(epoch)))
 
         train_loss_total.append(train_loss / batch)
         val_loss_total.append(val_loss / batch_valid)
@@ -113,72 +110,110 @@ def train_model(model, dataloaders, epochs, optimizer, criterion, patience) :
         if (epoch != 0) and (val_loss_total[epoch] >= val_loss_total[epoch - 1]):
             loss_increase += 1
             if loss_increase >= patience :
-                torch.save(model, './saved_model')
+                #torch.save(model.state_dict(), './')
+                checkpoint = {
+                    'epoch': epoch,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                }
+                torch.save(checkpoint, "oracle1.pt")
+
                 print ("early stopping")
                 break
+                
         else :
             loss_increase = 0
 
     # graph train/validation loss and accuracy
     graph(val_loss_total, train_loss_total, "loss")
     graph(valid_acc_total, train_acc_total, "acc")
-    torch.save(model, './saved_model')
+    
+    if (test_model) :
+        model = model.eval()
+        batch_test = 0
+        test_acc = 0
+        test_loss = 0
+        with torch.no_grad():
+            for i, sample in enumerate(test_dataloader) :
+                batch_test += 1
+                image, label = sample
+                image = image.cuda()
+                label = label.cuda()
+                # validate accuracy, loss
+    
+                outputs = model(image)
+                loss = criterion(outputs, label)
+                #output_valid = model(image)
+                
+                _, predicted = torch.max(outputs, 1)
+                test_acc += torch.sum(predicted == label)
+                test_loss += loss.item()
+        model = model.train()
+        print("Test accuracy: " + str(test_acc.cpu().numpy() / len(test_dataloader.dataset)))
+        print("Test loss: " + str(test_loss / batch_test))
 
-    test_acc = 0
-    model = model.eval()
-    with torch.no_grad():
-        for i, test in enumerate(test_dataloader):
-            images, labels = test
-            images = images.cuda()
-            labels = labels.cuda()
-            outputs = model(images)
-            _, predicted = torch.max(outputs.data, 1)
-            test_acc += torch.sum(predicted == labels)
+    # save model
+    checkpoint = {
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+    }
+    torch.save(checkpoint, "oracle1.pt")
 
-
-    print("Accuracy of the network: " + str(test_acc.cpu().numpy()/len(test_dataset)))
 
 if __name__ == '__main__': 
-    model = models.vgg16(pretrained=True)
+    torch.cuda.empty_cache()
+    model = models.inception_v3(pretrained=True, init_weights=True, aux_logits=True)
+    model.fc = nn.Linear(2048, 120)
+    model.AuxLogits.fc = nn.Linear(768, 120)
    # model.fc = nn.Linear(512,120)
    # model.fc.apply(weights_init)
 
-    model.classifier[6] = nn.Linear(4096,120)
-    model.classifier[6].apply(weights_init)
+   # model.classifier[6] = nn.Linear(4096,120)
+   # model.classifier[6].apply(weights_init)
 
     
     # load the datasets
     
-    train_dataset = dogData.Dog_Train_Dataset('train_list.txt')
-    valid_dataset = dogData.Dog_Test_Dataset('val_list.txt')
-    test_dataset = dogData.Dog_Test_Dataset('test_list.txt')
+    #train_dataset, valid_dataset = ic_dataset.get_icdataset_train_test('/data/dataset_stanford_dog_recreation', train_perc=.8)
+    #train_dataset.save_label_map()
+    #valid_dataset = dogData.Dog_Test_Dataset('val_list.txt')
+    #test_dataset = datasets.ImageFolder()
     
+
     train_transform = transforms.Compose([ 
-        transforms.Resize(256), 
-        transforms.RandomCrop(224), 
-        transforms.ToTensor()])
-        #transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        transforms.RandomResizedCrop(299),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
     test_transform = transforms.Compose([ 
-        transforms.Resize(256), 
-        transforms.CenterCrop(224), 
-        transforms.ToTensor()])
-        #transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+        transforms.Resize(299),
+        transforms.CenterCrop(299), 
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
-    #train_dataset= datasets.ImageFolder('TrainImages/', transform=train_transform)
-    #valid_dataset= datasets.ImageFolder('ValImages/', transform=test_transform)
-    #test_dataset= datasets.ImageFolder('TestImages/', transform=test_transform)
 
     #train_dataset, valid_dataset, test_dataset = torch.utils.data.random_split(total_dataset, [14406, 3087, 3087])
 
     # dataloaders for the datasets
+    
+    train_dataset= datasets.ImageFolder('/data/classifier/TrainImages/', transform=train_transform)
+    valid_dataset= datasets.ImageFolder('/data/classifier/ValImages/', transform=test_transform)
+    test_dataset= datasets.ImageFolder('/data/classifier/TestImages/', transform=test_transform)
+
     dataloaders = defaultdict(DataLoader)
     dataloaders['train'] =  DataLoader(train_dataset, shuffle=True, batch_size = 64, num_workers=4)
     dataloaders['validate'] =  DataLoader(valid_dataset, shuffle=False, num_workers=4)
-    dataloaders['test'] =  DataLoader(test_dataset, shuffle=False, num_workers=4)
+    if (TEST_MODEL):
+        dataloaders['test'] =  DataLoader(test_dataset, shuffle=False, num_workers=4)
 
-    epochs = 10
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
+    train_loader = DataLoader(train_dataset, shuffle=True, batch_size = 64, num_workers=4)
+    val_loader =  DataLoader(valid_dataset, shuffle=False, num_workers=4)
+    test_loader = DataLoader(valid_dataset, shuffle=False, num_workers=4)
+    
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5)
+    #optimizer = torch.optim.SGD(model.parameters(), lr=1e-3, momentum=0.9)
     criterion = nn.CrossEntropyLoss()
     model = model.cuda()
-    train_model(model, dataloaders, epochs, optimizer, criterion, 2)
+    train_model(model, train_loader, val_loader,test_loader, EPOCHS, optimizer, criterion, PATIENCE, TEST_MODEL)
