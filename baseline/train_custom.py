@@ -160,7 +160,7 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
     }
     torch.save(checkpoint, "oracle1.pt")
 
-
+'''
 if __name__ == '__main__': 
     torch.cuda.empty_cache()
     model = models.inception_v3(pretrained=True, init_weights=True, aux_logits=True)
@@ -217,3 +217,4 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     model = model.cuda()
     train_model(model, train_loader, val_loader,test_loader, EPOCHS, optimizer, criterion, PATIENCE, TEST_MODEL)
+'''
