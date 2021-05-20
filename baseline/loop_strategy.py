@@ -79,7 +79,7 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
     if N < 1: raise Exception('N < 1')
 
     L_ind = set(range(len(D)))
-    L_ind = L_indL.difference(D_0_ind)
+    L_ind = L_ind.difference(D_0_ind)
 
     D_0 = {i:int(D[i][1].numpy()) for i in D_0_ind}
 
