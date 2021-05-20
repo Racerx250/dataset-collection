@@ -60,7 +60,7 @@ class RandomOracle(OracleStrategy):
         self.perc = perc
         self.D = D
 
-    def predict(self, D_1_ind:typing.List[int]):
+    def predict(self, D_1_ind:typing.List[int]) -> dict:
         label_map = [(i, int(self.D[i][1].numpy())) if random.random() < self.perc \
             else random.choice([(i, x) for x in range(len(self.D.all_labels)) if x != int(self.D[i][1].numpy())]) \
                 for i in D_1_ind]
@@ -84,7 +84,6 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
     D_0 = {i:int(D[i][1].numpy()) for i in D_0_ind}
 
     for i in range(N):
-        print(i)
         # train model if needed
         filtr.train(L_ind)
         
