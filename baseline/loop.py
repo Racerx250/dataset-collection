@@ -12,7 +12,7 @@ from train_custom import train_model as train_model
 import ic_dataset
 
 def get_subset(D: torch.utils.data.Dataset, ind:typing.Set[int]) -> torch.utils.data.Subset:
-    return torch.utils.data.Subset(D, ind)
+    return torch.utils.data.Subset(D, list(ind))
 
 class FilterStrategy:
     def __init__(self):
@@ -43,6 +43,20 @@ class CombineStrategy:
         pass
 
 class RandomFilter(FilterStrategy):
+    perc = .1
+    D = None
+    test_set = None
+
+    def __init__(self, D, test_set, perc:float = .1):
+        if perc > 1 or perc < 0: raise Exception('need 0 <= perc <= 1')
+        self.perc = perc
+        self.D = D
+        self.test_set = test_set
+
+    def filter(self, D_test:typing.Set[int]) -> typing.Set[int]:
+        return set([i for i in D_test if random.random() < self.perc])
+
+class NNFilter(FilterStrategy):
     perc = .1
     D = None
     test_set = None
@@ -138,7 +152,7 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
 if __name__ == '__main__':
     #dataset = ic_dataset.get_icdataset('dataset_stanford_dogs')
     dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_stanford_dogs', train_perc=0.85)
-    filtr = RandomFilter(dataset, test_set, perc=.001)
+    filtr = NNFilter(dataset, test_set, perc=.001)
     oracle = RandomOracle(dataset)
     combiner = SimpleCombine()
 
