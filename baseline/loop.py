@@ -161,5 +161,6 @@ if __name__ == '__main__':
     filtr = NNFilter(dataset, test_set, perc=.001)
     oracle = RandomOracle(dataset)
     combiner = SimpleCombine()
+    start_perc = .01
 
-    start_loop(10, filtr, oracle, combiner, set(range(10)), dataset)
+    start_loop(10, filtr, oracle, combiner, set(random.sample(range(len(dataset)), int(len(dataset)*start_perc))), dataset)
