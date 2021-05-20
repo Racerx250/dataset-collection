@@ -1,6 +1,6 @@
 import typing
 import random
-
+import json
 import torch
 
 import ic_dataset
@@ -84,6 +84,7 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
     D_0 = {i:int(D[i][1].numpy()) for i in D_0_ind}
 
     for i in range(N):
+        print(i)
         # train model if needed
         filtr.train(L_ind)
         
@@ -98,12 +99,12 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
 
         L_ind = L_ind.difference(set(D_0.keys()))
     
-    return None
+    with open('D_0_final.json', 'w') as f: json.dump(D_0, f, indent=2)
     
 if __name__ == '__main__':
-    dataset = ic_dataset.get_icdataset('dataset_dogs_small_dirty')
+    dataset = ic_dataset.get_icdataset('dataset_stanford_dogs')
 
-    filtr = RandomFilter(dataset)
+    filtr = RandomFilter(dataset, perc=.001)
     oracle = RandomOracle(dataset)
     combiner = SimpleCombine()
 

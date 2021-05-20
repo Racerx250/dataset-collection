@@ -33,7 +33,7 @@ class DatabaseInterface:
         return self.database_dict
 
     def get_classes(self) -> typing.List[str]:
-        return self.sources
+        return self.classes
 
     def get_source(self) -> typing.List[str]:
         return self.sources
@@ -174,7 +174,11 @@ def get_database(db_name:str, dir_name:str = None, classes:typing.List[str] = []
 
         image_names = []
         image_num = 0
-        for source_dir in [join(joined_class_path, source) for source in source_dirs]:
+
+        source_dirs_full = [join(joined_class_path, source) for source in source_dirs]
+        if len(source_dirs) == 0: source_dirs_full = [join(path_to_dir, class_dir)]
+
+        for source_dir in source_dirs_full:
             image_names.extend([{
                 'file_name': f,
                 'dir': source_dir,
@@ -182,6 +186,7 @@ def get_database(db_name:str, dir_name:str = None, classes:typing.List[str] = []
                 'relative_path': join(source_dir, f),
                 'full_path': None
             } for f in listdir(source_dir) if isfile(join(source_dir, f)) and f[-5:] != '.json'])
+
             image_num += 1
 
         class_image_map[class_dir] = image_names
@@ -217,6 +222,10 @@ if __name__ == '__main__':
 
     # temp = get_database('dataset_dogs_small_dirty')
     # print(temp.get_image_by_class_num('border_collie_dog', 0, raw=True))
+    
+    # temp = get_database('dataset_stanford_dogs')
+    # print(temp.get_classes())
+    # print(temp.get_image_by_class_num('n02085620-Chihuahua', 0, raw=True))
 
     # temp = create_blind_database('dataset_dogs_small_dirty')
     # print(temp.oracle_labels(list(range(10))))
