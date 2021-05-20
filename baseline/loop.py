@@ -7,7 +7,7 @@ import torchvision.models as models
 from torchvision import transforms as transforms
 from torch.utils.data import DataLoader
 from collections import defaultdict
-from train_custom import train_model as train_model
+import train_custom
 
 import ic_dataset
 
@@ -75,30 +75,36 @@ class NNFilter(FilterStrategy):
         train_len = round(len(total_data)*0.85)
         train_set, val_set = torch.utils.data.random_split(total_data, [train_len, len(total_data)-train_len])
 
+        torch.cuda.empty_cache()
         model = models.inception_v3(pretrained=True, init_weights=True, aux_logits=True)
         model.fc = nn.Linear(2048, 120)
         model.AuxLogits.fc = nn.Linear(768, 120)
+    
+
         train_transform = transforms.Compose([ 
             transforms.RandomResizedCrop(299),
             transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+            transforms.ToTensor()])
 
         test_transform = transforms.Compose([ 
             transforms.Resize(299),
             transforms.CenterCrop(299), 
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+            transforms.ToTensor()])
 
-        dataloaders = defaultdict(DataLoader)
-        train_loader =  DataLoader(train_set, shuffle=True, batch_size = 64, num_workers=4)
+        train_set.dataset.transform = train_transform
+        print(train_set.dataset.transform)
+        val_set.dataset.transform = test_transform
+        test_set.transform = test_transform
+        
+        train_loader = DataLoader(train_set, shuffle=True, batch_size = 64, num_workers=4)
         val_loader =  DataLoader(val_set, shuffle=False, num_workers=4)
-        test_loader =  DataLoader(test_set, shuffle=False, num_workers=4)
+        test_loader = DataLoader(self.test_set, shuffle=False, num_workers=4)
 
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5)
         criterion = nn.CrossEntropyLoss()
         model = model.cuda()
-        train_model(model, train_loader, val_loader,test_loader, 50, optimizer, criterion, 3, True)
+
+        train_custom.train_model(model, train_loader, val_loader, test_loader, 50, optimizer, criterion, 3, True)
 
 class RandomOracle(OracleStrategy):
     perc = .9
@@ -151,7 +157,7 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
     
 if __name__ == '__main__':
     #dataset = ic_dataset.get_icdataset('dataset_stanford_dogs')
-    dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_stanford_dogs', train_perc=0.85)
+    dataset, test_set = ic_dataset.get_icdataset_train_test('/data/classifier/Images', train_perc=0.85)
     filtr = NNFilter(dataset, test_set, perc=.001)
     oracle = RandomOracle(dataset)
     combiner = SimpleCombine()
