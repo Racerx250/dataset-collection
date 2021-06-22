@@ -86,7 +86,7 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
     for i in range(N):
         print(i)
         # train model if needed
-        filtr.train(L_ind)
+        filtr.train(D_0)
         
         # find new images
         D_1_ind = filtr.filter(L_ind)
@@ -107,5 +107,6 @@ if __name__ == '__main__':
     filtr = RandomFilter(dataset, perc=.001)
     oracle = RandomOracle(dataset)
     combiner = SimpleCombine()
+    start_perc = .01
 
-    start_loop(10, filtr, oracle, combiner, set(range(10)), dataset)
+    start_loop(10, filtr, oracle, combiner, set(random.sample(range(len(dataset)), int(len(dataset)*start_perc))), dataset)

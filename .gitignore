@@ -3,6 +3,8 @@
 node_modules/*
 __tests__/data/dataset/*
 **/__pycache__
+images.tar:Zone.Identifier
+temp
 
 # python package
 dist/
