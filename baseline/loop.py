@@ -4,15 +4,17 @@ import json
 import torch
 import torch.nn as nn
 import torchvision.models as models
+import numpy as np
 from torchvision import transforms as transforms
 from torch.utils.data import DataLoader
 from collections import defaultdict
-import train_custom
 
+import train_custom
 import ic_dataset
 
 def get_subset(D: torch.utils.data.Dataset, ind:typing.Set[int]) -> torch.utils.data.Subset:
-    return torch.utils.data.Subset(D, list(ind))
+    replaced_dataset = [(D[i][0].numpy(), np.array(ind[i]) if i in ind.keys() else D[i][1].numpy()) for i in range(len(D))]
+    return torch.utils.data.Subset(replaced_dataset, list(ind))
 
 class FilterStrategy:
     def __init__(self):
@@ -70,7 +72,7 @@ class NNFilter(FilterStrategy):
     def filter(self, D_test:typing.Set[int]) -> typing.Set[int]:
         return set([i for i in D_test if random.random() < self.perc])
 
-    def train(self, D_train:typing.Set[int]) -> None:
+    def train(self, D_train:dict) -> None:
         total_data = get_subset(self.D, D_train)
         train_len = round(len(total_data)*0.85)
         train_set, val_set = torch.utils.data.random_split(total_data, [train_len, len(total_data)-train_len])
@@ -152,12 +154,14 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
         D_0 = combiner.combine(D_0, D_1)
 
         L_ind = L_ind.difference(set(D_0.keys()))
-    
+
     with open('D_0_final.json', 'w') as f: json.dump(D_0, f, indent=2)
     
 if __name__ == '__main__':
-    #dataset = ic_dataset.get_icdataset('dataset_stanford_dogs')
+    # print(ic_dataset.get_icdataset('dataset_dogs_large'))
+    # dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_dogs_large', train_perc=0.85)
     dataset, test_set = ic_dataset.get_icdataset_train_test('/data/classifier/Images', train_perc=0.85)
+    # filtr = RandomFilter(dataset, test_set, perc=.001)
     filtr = NNFilter(dataset, test_set, perc=.001)
     oracle = RandomOracle(dataset)
     combiner = SimpleCombine()

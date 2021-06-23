@@ -5,6 +5,7 @@ __tests__/data/dataset/*
 **/__pycache__
 images.tar:Zone.Identifier
 temp
+D_0_final.json
 
 # python package
 dist/
