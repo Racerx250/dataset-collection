@@ -64,7 +64,7 @@ class NNFilter(FilterStrategy):
     test_set = None
     loopNum = None
 
-    def __init__(self, D, test_set, loopNum, perc:float = .1):
+    def __init__(self, D, test_set, loopNum, sizeNum, perc:float = .1):
         if perc > 1 or perc < 0: raise Exception('need 0 <= perc <= 1')
         self.perc = perc
         self.D = D
@@ -74,7 +74,7 @@ class NNFilter(FilterStrategy):
     def filter(self, D_test:typing.Set[int]) -> typing.Set[int]:
         return set([i for i in D_test if random.random() < self.perc])
 
-    def train(self, D_train:dict) -> None:
+    def train(self, sizeNum, D_train:dict) -> None:
         total_data = get_subset(self.D, D_train)
         train_len = round(len(total_data)*0.85)
         train_set, val_set = torch.utils.data.random_split(total_data, [train_len, len(total_data)-train_len])
@@ -103,15 +103,16 @@ class NNFilter(FilterStrategy):
         test_set.transform = test_transform
         print(test_set.dataset.transform)
         '''
-        train_loader = DataLoader(train_set, shuffle=True, batch_size = 64, num_workers=4)
-        val_loader =  DataLoader(val_set, shuffle=False, num_workers=4)
-        test_loader = DataLoader(self.test_set, shuffle=False, num_workers=4)
+        train_loader = DataLoader(train_set, shuffle=True, batch_size = 32, num_workers=2)
+        val_loader =  DataLoader(val_set, shuffle=False, num_workers=2)
+        test_loader = DataLoader(self.test_set, shuffle=False, num_workers=2)
 
         optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5)
         criterion = nn.CrossEntropyLoss()
         model = model.cuda()
 
-        train_custom.train_model(model, train_loader, val_loader, test_loader, 1, optimizer, criterion, 3, True, self.loopNum)
+        train_custom.train_model(model, train_loader, val_loader, test_loader, 2, 
+                optimizer, criterion, 3, True, self.loopNum, sizeNum)
 
 class RandomOracle(OracleStrategy):
     perc = .9
@@ -147,7 +148,7 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
 
     for i in range(N):
         # train model if needed
-        filtr.train(D_0)
+        filtr.train(i, D_0)
         
         # find new images
         D_1_ind = filtr.filter(L_ind)
@@ -166,14 +167,15 @@ if __name__ == '__main__':
     # print(ic_dataset.get_icdataset('dataset_dogs_large'))
     # dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_dogs_large', train_perc=0.85)
     dataset, test_set = ic_dataset.get_icdataset_train_test('D:/github/classifier/Images', train_perc=0.85)
-
-    
+    print("finish importing images")
+    start_perc = .1
+    D_0_ind = set(random.sample(range(len(dataset)), int(len(dataset)*start_perc)))
     # loop for acurracy 0.1 to 1 and dataset size 0.1 to 1
     for accuracy in range(1, 10):
         oracle = RandomOracle(dataset, accuracy / 10)
         filtr = NNFilter(dataset, test_set, accuracy, perc=.1)
         combiner = SimpleCombine()
-        start_perc = .1
-        start_loop(10, filtr, oracle, combiner, set(random.sample(range(len(dataset)), int(len(dataset)*start_perc))), dataset)
+        print("start loop")
+        start_loop(10, filtr, oracle, combiner, D_0_ind, dataset)
 
         

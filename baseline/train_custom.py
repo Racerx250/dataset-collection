@@ -10,10 +10,11 @@ from torchvision import transforms as transforms
 from torchvision import datasets as datasets
 import ic_dataset
 
+'''
 TEST_MODEL = True
 EPOCHS = 50
 PATIENCE = 3
-
+'''
 # xavier initialization
 def weights_init(m):
     if isinstance(m, nn.Conv2d):
@@ -24,7 +25,7 @@ def weights_init(m):
         torch.nn.init.xavier_uniform_(m.weight)
 
 # utility function for plotting
-def graph(val_loss, train_loss, label, loopNum):
+def graph(val_loss, train_loss, label, loopNum, sizeNum):
     min_epoch = len(val_loss)
 
     x = [[i + 1] for i in range(min_epoch)]
@@ -40,9 +41,10 @@ def graph(val_loss, train_loss, label, loopNum):
     plt.legend(loc="upper right")
     plt.xlabel("epoch size")
     #plt.show()
-    plt.savefig('loop' + str(loopNum) + '_' + label)
+    plt.savefig('loop' + str(loopNum) + '_' + str(sizeNum) + '_' + label)
 
-def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs, optimizer, criterion, patience, test_model, loopNum) :
+def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs, optimizer, 
+        criterion, patience, test_model, loopNum, sizeNum) :
     loss_increase = 0
     train_loss_total = []
     val_loss_total = []
@@ -64,7 +66,7 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             batch += 1
             image, label = sample
             image = image.cuda()
-            label = label.cuda()
+            label = label.long().cuda()
             optimizer.zero_grad()
             # forward pass
             outputs, aux_outputs = model(image)
@@ -80,7 +82,7 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             train_loss += loss.item()
 
         if (epoch % 10 == 0) :
-            print("epoch" + epoch + " train complete")
+            print("epoch" + str(epoch) + " train complete")
 
         # validate 
         model = model.eval()
@@ -89,7 +91,7 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
                 batch_valid += 1
                 image, label = sample
                 image = image.cuda()
-                label = label.cuda()
+                label = label.long().cuda()
                 # validate accuracy, loss
     
                 outputs = model(image)
@@ -102,7 +104,7 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
         model = model.train()
 
         if (epoch % 10 == 0) :
-            print("epoch" + epoch + " train complete")
+            print("epoch" + str(epoch) + " train complete")
 
         train_loss_total.append(train_loss / batch)
         val_loss_total.append(val_loss / batch_valid)
@@ -114,13 +116,14 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             loss_increase += 1
             if loss_increase >= patience :
                 #torch.save(model.state_dict(), './')
+                '''
                 checkpoint = {
                     'epoch': epoch,
                     'model_state_dict': model.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
                 }
                 torch.save(checkpoint, "oracle1.pt")
-
+                '''
                 print ("early stopping")
                 break
                 
@@ -128,8 +131,8 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             loss_increase = 0
 
     # graph train/validation loss and accuracy
-    graph(val_loss_total, train_loss_total, "loss", loopNum)
-    graph(valid_acc_total, train_acc_total, "acc", loopNum)
+    graph(val_loss_total, train_loss_total, "loss", loopNum, sizeNum)
+    graph(valid_acc_total, train_acc_total, "acc", loopNum, sizeNum)
     
     if (test_model) :
         model = model.eval()
@@ -141,7 +144,7 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
                 batch_test += 1
                 image, label = sample
                 image = image.cuda()
-                label = label.cuda()
+                label = label.long().cuda()
                 # validate accuracy, loss
     
                 outputs = model(image)
@@ -153,17 +156,18 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
                 test_loss += loss.item()
         model = model.train()
         f = open("loopTable.txt", "a")
-        f.write("Test accuracy: " + str(test_acc.cpu().numpy() / len(test_dataloader.dataset)))
-        f.write("Test loss: " + str(test_loss / batch_test))
+        f.write("size num is " + str(sizeNum) + " loop num is " + str(loopNum) + '\n')
+        f.write("Test accuracy: " + str(test_acc.cpu().numpy() / len(test_dataloader.dataset))  + '\n')
+        f.write("Test loss: " + str(test_loss / batch_test) + '\n')
         f.close()
 
     # save model
-    checkpoint = {
-        'epoch': epoch,
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict(),
-    }
-    torch.save(checkpoint, "oracle1.pt")
+    #checkpoint = {
+    #   'epoch': epoch,
+    #  'model_state_dict': model.state_dict(),
+    # 'optimizer_state_dict': optimizer.state_dict(),
+    #}
+    #torch.save(checkpoint, "oracle1.pt")
 
 '''
 if __name__ == '__main__': 
