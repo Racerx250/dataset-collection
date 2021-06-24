@@ -17,7 +17,10 @@ from torchvision import datasets, transforms as tv
 class ICDataset(Dataset):
     def __init__(self, blind_database:database_interface.BlindDatabase, database_dir_path:str = None, db_name:str = None, use_int_labels:bool = False):
         self.normalize = tv.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-        self.transform = tv.Compose([tv.Resize(256), tv.CenterCrop(224), tv.ToTensor()])
+        self.transform = tv.Compose([ 
+            tv.Resize(299),
+            tv.CenterCrop(299), 
+            tv.ToTensor()])
         
         self.database_dir_path = database_dir_path
         self.use_int_labels = use_int_labels

@@ -24,7 +24,7 @@ def weights_init(m):
         torch.nn.init.xavier_uniform_(m.weight)
 
 # utility function for plotting
-def graph(val_loss, train_loss, label):
+def graph(val_loss, train_loss, label, loopNum):
     min_epoch = len(val_loss)
 
     x = [[i + 1] for i in range(min_epoch)]
@@ -39,9 +39,10 @@ def graph(val_loss, train_loss, label):
         plt.ylabel("acc")
     plt.legend(loc="upper right")
     plt.xlabel("epoch size")
-    plt.show()
+    #plt.show()
+    plt.savefig('loop' + str(loopNum) + '_' + label)
 
-def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs, optimizer, criterion, patience, test_model) :
+def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs, optimizer, criterion, patience, test_model, loopNum) :
     loss_increase = 0
     train_loss_total = []
     val_loss_total = []
@@ -78,7 +79,8 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             optimizer.step()
             train_loss += loss.item()
 
-        print("epoch train complete")
+        if (epoch % 10 == 0) :
+            print("epoch" + epoch + " train complete")
 
         # validate 
         model = model.eval()
@@ -99,7 +101,8 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
                 val_loss += loss.item()
         model = model.train()
 
-        print("epoch validate complete")
+        if (epoch % 10 == 0) :
+            print("epoch" + epoch + " train complete")
 
         train_loss_total.append(train_loss / batch)
         val_loss_total.append(val_loss / batch_valid)
@@ -125,8 +128,8 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             loss_increase = 0
 
     # graph train/validation loss and accuracy
-    graph(val_loss_total, train_loss_total, "loss")
-    graph(valid_acc_total, train_acc_total, "acc")
+    graph(val_loss_total, train_loss_total, "loss", loopNum)
+    graph(valid_acc_total, train_acc_total, "acc", loopNum)
     
     if (test_model) :
         model = model.eval()
@@ -149,8 +152,10 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
                 test_acc += torch.sum(predicted == label)
                 test_loss += loss.item()
         model = model.train()
-        print("Test accuracy: " + str(test_acc.cpu().numpy() / len(test_dataloader.dataset)))
-        print("Test loss: " + str(test_loss / batch_test))
+        f = open("loopTable.txt", "a")
+        f.write("Test accuracy: " + str(test_acc.cpu().numpy() / len(test_dataloader.dataset)))
+        f.write("Test loss: " + str(test_loss / batch_test))
+        f.close()
 
     # save model
     checkpoint = {

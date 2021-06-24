@@ -62,12 +62,14 @@ class NNFilter(FilterStrategy):
     perc = .1
     D = None
     test_set = None
+    loopNum = None
 
-    def __init__(self, D, test_set, perc:float = .1):
+    def __init__(self, D, test_set, loopNum, perc:float = .1):
         if perc > 1 or perc < 0: raise Exception('need 0 <= perc <= 1')
         self.perc = perc
         self.D = D
         self.test_set = test_set
+        self.loopNum = loopNum
 
     def filter(self, D_test:typing.Set[int]) -> typing.Set[int]:
         return set([i for i in D_test if random.random() < self.perc])
@@ -82,7 +84,7 @@ class NNFilter(FilterStrategy):
         model.fc = nn.Linear(2048, 120)
         model.AuxLogits.fc = nn.Linear(768, 120)
     
-
+        '''
         train_transform = transforms.Compose([ 
             transforms.RandomResizedCrop(299),
             transforms.RandomHorizontalFlip(),
@@ -93,11 +95,14 @@ class NNFilter(FilterStrategy):
             transforms.CenterCrop(299), 
             transforms.ToTensor()])
 
+       
         train_set.dataset.transform = train_transform
         print(train_set.dataset.transform)
         val_set.dataset.transform = test_transform
+        print(val_set.dataset.transform)
         test_set.transform = test_transform
-        
+        print(test_set.dataset.transform)
+        '''
         train_loader = DataLoader(train_set, shuffle=True, batch_size = 64, num_workers=4)
         val_loader =  DataLoader(val_set, shuffle=False, num_workers=4)
         test_loader = DataLoader(self.test_set, shuffle=False, num_workers=4)
@@ -106,7 +111,7 @@ class NNFilter(FilterStrategy):
         criterion = nn.CrossEntropyLoss()
         model = model.cuda()
 
-        train_custom.train_model(model, train_loader, val_loader, test_loader, 50, optimizer, criterion, 3, True)
+        train_custom.train_model(model, train_loader, val_loader, test_loader, 1, optimizer, criterion, 3, True, self.loopNum)
 
 class RandomOracle(OracleStrategy):
     perc = .9
@@ -160,11 +165,15 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
 if __name__ == '__main__':
     # print(ic_dataset.get_icdataset('dataset_dogs_large'))
     # dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_dogs_large', train_perc=0.85)
-    dataset, test_set = ic_dataset.get_icdataset_train_test('/data/classifier/Images', train_perc=0.85)
-    # filtr = RandomFilter(dataset, test_set, perc=.001)
-    filtr = NNFilter(dataset, test_set, perc=.001)
-    oracle = RandomOracle(dataset)
-    combiner = SimpleCombine()
-    start_perc = .01
+    dataset, test_set = ic_dataset.get_icdataset_train_test('D:/github/classifier/Images', train_perc=0.85)
 
-    start_loop(10, filtr, oracle, combiner, set(random.sample(range(len(dataset)), int(len(dataset)*start_perc))), dataset)
+    
+    # loop for acurracy 0.1 to 1 and dataset size 0.1 to 1
+    for accuracy in range(1, 10):
+        oracle = RandomOracle(dataset, accuracy / 10)
+        filtr = NNFilter(dataset, test_set, accuracy, perc=.1)
+        combiner = SimpleCombine()
+        start_perc = .1
+        start_loop(10, filtr, oracle, combiner, set(random.sample(range(len(dataset)), int(len(dataset)*start_perc))), dataset)
+
+        
