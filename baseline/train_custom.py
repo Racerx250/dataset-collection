@@ -26,6 +26,7 @@ def weights_init(m):
 
 # utility function for plotting
 def graph(val_loss, train_loss, label, loopNum, sizeNum):
+    fig = plt.figure()
     min_epoch = len(val_loss)
 
     x = [[i + 1] for i in range(min_epoch)]
@@ -41,7 +42,7 @@ def graph(val_loss, train_loss, label, loopNum, sizeNum):
     plt.legend(loc="upper right")
     plt.xlabel("epoch size")
     #plt.show()
-    plt.savefig('loop' + str(loopNum) + '_' + str(sizeNum) + '_' + label)
+    fig.savefig('Graphs/' + 'loop' + str(loopNum) + '_' + str(sizeNum) + '_' + label)
 
 def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs, optimizer, 
         criterion, patience, test_model, loopNum, sizeNum) :

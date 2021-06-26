@@ -64,7 +64,7 @@ class NNFilter(FilterStrategy):
     test_set = None
     loopNum = None
 
-    def __init__(self, D, test_set, loopNum, sizeNum, perc:float = .1):
+    def __init__(self, D, test_set, loopNum, perc:float = .1):
         if perc > 1 or perc < 0: raise Exception('need 0 <= perc <= 1')
         self.perc = perc
         self.D = D
@@ -103,15 +103,15 @@ class NNFilter(FilterStrategy):
         test_set.transform = test_transform
         print(test_set.dataset.transform)
         '''
-        train_loader = DataLoader(train_set, shuffle=True, batch_size = 32, num_workers=2)
-        val_loader =  DataLoader(val_set, shuffle=False, num_workers=2)
-        test_loader = DataLoader(self.test_set, shuffle=False, num_workers=2)
+        train_loader = DataLoader(train_set, shuffle=True, batch_size = 32, num_workers=8)
+        val_loader =  DataLoader(val_set, shuffle=False, num_workers=8)
+        test_loader = DataLoader(self.test_set, shuffle=False, num_workers=8)
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5)
+        optimizer = torch.optim.Adam(model.parameters(), lr=2e-4, weight_decay=1e-5)
         criterion = nn.CrossEntropyLoss()
         model = model.cuda()
 
-        train_custom.train_model(model, train_loader, val_loader, test_loader, 2, 
+        train_custom.train_model(model, train_loader, val_loader, test_loader, 30, 
                 optimizer, criterion, 3, True, self.loopNum, sizeNum)
 
 class RandomOracle(OracleStrategy):
@@ -166,7 +166,7 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
 if __name__ == '__main__':
     # print(ic_dataset.get_icdataset('dataset_dogs_large'))
     # dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_dogs_large', train_perc=0.85)
-    dataset, test_set = ic_dataset.get_icdataset_train_test('D:/github/classifier/Images', train_perc=0.85)
+    dataset, test_set = ic_dataset.get_icdataset_train_test('/data/classifier/Images', train_perc=0.85)
     print("finish importing images")
     start_perc = .1
     D_0_ind = set(random.sample(range(len(dataset)), int(len(dataset)*start_perc)))
