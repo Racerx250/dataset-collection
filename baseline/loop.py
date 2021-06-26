@@ -167,7 +167,7 @@ if __name__ == '__main__':
     # print(ic_dataset.get_icdataset('dataset_dogs_large'))
     # dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_dogs_large', train_perc=0.85)
     dataset, test_set = ic_dataset.get_icdataset_train_test('/data/classifier/Images', train_perc=0.85)
-    print("finish importing images")
+    #print("finish importing images")
     start_perc = .1
     D_0_ind = set(random.sample(range(len(dataset)), int(len(dataset)*start_perc)))
     # loop for acurracy 0.1 to 1 and dataset size 0.1 to 1
@@ -175,7 +175,7 @@ if __name__ == '__main__':
         oracle = RandomOracle(dataset, accuracy / 10)
         filtr = NNFilter(dataset, test_set, accuracy, perc=.1)
         combiner = SimpleCombine()
-        print("start loop")
+        #print("start loop")
         start_loop(10, filtr, oracle, combiner, D_0_ind, dataset)
 
         

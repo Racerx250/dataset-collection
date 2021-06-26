@@ -54,7 +54,7 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
 
 
     for epoch in range(epochs):
-        print(epoch)
+        #print(epoch)
         train_loss = 0
         val_loss = 0
         batch = 0
@@ -82,8 +82,8 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             optimizer.step()
             train_loss += loss.item()
 
-        if (epoch % 10 == 0) :
-            print("epoch" + str(epoch) + " train complete")
+        #if (epoch % 10 == 0) :
+           # print("epoch" + str(epoch) + " train complete")
 
         # validate 
         model = model.eval()
@@ -104,8 +104,8 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
                 val_loss += loss.item()
         model = model.train()
 
-        if (epoch % 10 == 0) :
-            print("epoch" + str(epoch) + " train complete")
+        #if (epoch % 10 == 0) :
+           # print("epoch" + str(epoch) + " train complete")
 
         train_loss_total.append(train_loss / batch)
         val_loss_total.append(val_loss / batch_valid)
@@ -125,7 +125,7 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
                 }
                 torch.save(checkpoint, "oracle1.pt")
                 '''
-                print ("early stopping")
+             #   print ("early stopping")
                 break
                 
         else :
