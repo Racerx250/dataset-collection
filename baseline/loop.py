@@ -113,6 +113,11 @@ class NNFilter(FilterStrategy):
 
         train_custom.train_model(model, train_loader, val_loader, test_loader, 30, 
                 optimizer, criterion, 3, True, self.loopNum, sizeNum)
+        del train_set
+        del val_set
+        del train_loader
+        del val_loader
+        del test_loader
 
 class RandomOracle(OracleStrategy):
     perc = .9
@@ -161,7 +166,7 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
 
         L_ind = L_ind.difference(set(D_0.keys()))
 
-    with open('D_0_final.json', 'w') as f: json.dump(D_0, f, indent=2)
+    #with open('D_0_final.json', 'w') as f: json.dump(D_0, f, indent=2)
     
 if __name__ == '__main__':
     # print(ic_dataset.get_icdataset('dataset_dogs_large'))
