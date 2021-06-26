@@ -103,11 +103,11 @@ class NNFilter(FilterStrategy):
         test_set.transform = test_transform
         print(test_set.dataset.transform)
         '''
-        train_loader = DataLoader(train_set, shuffle=True, batch_size = 32, num_workers=16)
-        val_loader =  DataLoader(val_set, shuffle=False, num_workers=16)
-        test_loader = DataLoader(self.test_set, shuffle=False, num_workers=16)
+        train_loader = DataLoader(train_set, shuffle=True, batch_size = 64, num_workers=8)
+        val_loader =  DataLoader(val_set, shuffle=False, num_workers=8)
+        test_loader = DataLoader(self.test_set, shuffle=False, num_workers=8)
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=2e-4, weight_decay=1e-5)
+        optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5)
         criterion = nn.CrossEntropyLoss()
         model = model.cuda()
 
@@ -166,7 +166,7 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
 
         L_ind = L_ind.difference(set(D_0.keys()))
 
-    #with open('D_0_final.json', 'w') as f: json.dump(D_0, f, indent=2)
+    with open('D_0_final.json', 'w') as f: json.dump(D_0, f, indent=2)
     
 if __name__ == '__main__':
     # print(ic_dataset.get_icdataset('dataset_dogs_large'))
