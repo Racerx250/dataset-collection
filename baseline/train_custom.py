@@ -42,7 +42,8 @@ def graph(val_loss, train_loss, label, loopNum, sizeNum):
     plt.legend(loc="upper right")
     plt.xlabel("epoch size")
     #plt.show()
-    fig.savefig('Graphs/' + 'loop' + str(loopNum) + '_' + str(sizeNum) + '_' + label)
+    fig.savefig('Graphs/' + 'accuracy' + str(loopNum) + '_' + str(sizeNum) + '_' + label)
+    fig.close()
 
 def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs, optimizer, 
         criterion, patience, test_model, loopNum, sizeNum) :
@@ -157,7 +158,7 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
                 test_loss += loss.item()
         model = model.train()
         f = open("loopTable.txt", "a")
-        f.write("size num is " + str(sizeNum) + " loop num is " + str(loopNum) + '\n')
+        f.write("size num is " + str(sizeNum) + " accuracy is " + str(loopNum) + '\n')
         f.write("Test accuracy: " + str(test_acc.cpu().numpy() / len(test_dataloader.dataset))  + '\n')
         f.write("Test loss: " + str(test_loss / batch_test) + '\n')
         f.close()

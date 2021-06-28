@@ -8,6 +8,10 @@ import numpy as np
 from torchvision import transforms as transforms
 from torch.utils.data import DataLoader
 from collections import defaultdict
+import pickle
+import os.path
+import math
+import sys
 
 import train_custom
 import ic_dataset
@@ -103,11 +107,11 @@ class NNFilter(FilterStrategy):
         test_set.transform = test_transform
         print(test_set.dataset.transform)
         '''
-        train_loader = DataLoader(train_set, shuffle=True, batch_size = 64, num_workers=8)
-        val_loader =  DataLoader(val_set, shuffle=False, num_workers=8)
-        test_loader = DataLoader(self.test_set, shuffle=False, num_workers=8)
+        train_loader = DataLoader(train_set, shuffle=True, batch_size = 32, num_workers=4, drop_last = True)
+        val_loader =  DataLoader(val_set, shuffle=False, num_workers=4)
+        test_loader = DataLoader(self.test_set, shuffle=False, num_workers=4)
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=1e-4, weight_decay=1e-5)
+        optimizer = torch.optim.Adam(model.parameters(), lr=2e-4, weight_decay=1e-5)
         criterion = nn.CrossEntropyLoss()
         model = model.cuda()
 
@@ -171,16 +175,27 @@ def start_loop(N:int, filtr:FilterStrategy, oracle:OracleStrategy, combiner:Comb
 if __name__ == '__main__':
     # print(ic_dataset.get_icdataset('dataset_dogs_large'))
     # dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_dogs_large', train_perc=0.85)
-    dataset, test_set = ic_dataset.get_icdataset_train_test('/data/classifier/Images', train_perc=0.85)
+    if (os.path.isfile('dataset.pkl')) :
+       with open('dataset.pkl', 'rb') as output:  # Overwrites any existing file.
+            dataset = pickle.load(input)
+       with open('dataset.pkl', 'rb') as output:  # Overwrites any existing file.
+            test_set = pickle.load(input)
+    else :
+        dataset, test_set = ic_dataset.get_icdataset_train_test('D:/github/classifier/Images', train_perc=0.85)
+        with open('dataset.pkl', 'wb') as output:
+            pickle.dump(dataset, output, pickle.HIGHEST_PROTOCOL)
+        with open('test_set.pkl', 'wb') as output:
+            pickle.dump(test_set, output, pickle.HIGHEST_PROTOCOL)
+
     #print("finish importing images")
     start_perc = .1
     D_0_ind = set(random.sample(range(len(dataset)), int(len(dataset)*start_perc)))
-    # loop for acurracy 0.1 to 1 and dataset size 0.1 to 1
-    for accuracy in range(1, 10):
-        oracle = RandomOracle(dataset, accuracy / 10)
-        filtr = NNFilter(dataset, test_set, accuracy, perc=.1)
-        combiner = SimpleCombine()
-        #print("start loop")
-        start_loop(10, filtr, oracle, combiner, D_0_ind, dataset)
+    # get accuracy from command arg
+    accuracy = int(sys.argv[1])
+    oracle = RandomOracle(dataset, accuracy/10)
+    filtr = NNFilter(dataset, test_set, accuracy, perc=.1)
+    combiner = SimpleCombine()
+    #print("start loop")
+    start_loop(10, filtr, oracle, combiner, D_0_ind, dataset)
 
         
