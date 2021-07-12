@@ -43,7 +43,7 @@ def graph(val_loss, train_loss, label, loopNum, sizeNum):
     plt.xlabel("epoch size")
     #plt.show()
     fig.savefig('Graphs/' + 'accuracy' + str(loopNum) + '_' + str(sizeNum) + '_' + label)
-    fig.close()
+    plt.close(fig)
 
 def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs, optimizer, 
         criterion, patience, test_model, loopNum, sizeNum) :
@@ -67,8 +67,8 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
         for i, sample in enumerate(train_dataloader) :
             batch += 1
             image, label = sample
-            image = image.cuda()
-            label = label.long().cuda()
+            image = image.to('cuda')
+            label = label.long().to('cuda')
             optimizer.zero_grad()
             # forward pass
             outputs, aux_outputs = model(image)
@@ -92,8 +92,8 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             for i, sample in enumerate(val_dataloader) :
                 batch_valid += 1
                 image, label = sample
-                image = image.cuda()
-                label = label.long().cuda()
+                image = image.to('cuda')
+                label = label.long().to('cuda')
                 # validate accuracy, loss
     
                 outputs = model(image)
@@ -145,8 +145,8 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             for i, sample in enumerate(test_dataloader) :
                 batch_test += 1
                 image, label = sample
-                image = image.cuda()
-                label = label.long().cuda()
+                image = image.to('cuda')
+                label = label.long().to('cuda')
                 # validate accuracy, loss
     
                 outputs = model(image)

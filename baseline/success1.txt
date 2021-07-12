@@ -1,0 +1,309 @@
+size num is 0 accuracy is 1
+Test accuracy: 0.36802568954641895
+Test loss: 3.2006518848503687
+size num is 0 accuracy is 3
+Test accuracy: 0.41407190779287806
+Test loss: 3.1678570400842396
+size num is 0 accuracy is 7
+Test accuracy: 0.38287745856987215
+Test loss: 3.161268731523724
+size num is 0 accuracy is 9
+Test accuracy: 0.3707207982109066
+Test loss: 3.279801065603101
+size num is 1 accuracy is 1
+Test accuracy: 0.3270829749412237
+Test loss: 3.3554483697066044
+size num is 0 accuracy is 8
+Test accuracy: 0.3832788577326682
+Test loss: 3.0422432939119166
+size num is 0 accuracy is 6
+Test accuracy: 0.413670508630082
+Test loss: 2.918985236061429
+size num is 1 accuracy is 3
+Test accuracy: 0.40627329548712654
+Test loss: 2.8280428249148186
+size num is 1 accuracy is 7
+Test accuracy: 0.4977923046046218
+Test loss: 2.2918071120502126
+size num is 1 accuracy is 9
+Test accuracy: 0.5530133608578474
+Test loss: 1.8987254475403164
+size num is 0 accuracy is 4
+Test accuracy: 0.36555995183210044
+Test loss: 3.2251081903135534
+size num is 0 accuracy is 5
+Test accuracy: 0.39623831641722573
+Test loss: 3.0567525733115493
+size num is 2 accuracy is 7
+Test accuracy: 0.5453294340271805
+Test loss: 1.979641161812667
+size num is 2 accuracy is 1
+Test accuracy: 0.2814954985951029
+Test loss: 3.491431617643337
+size num is 3 accuracy is 7
+Test accuracy: 0.5752623430242559
+Test loss: 1.708409469299254
+size num is 2 accuracy is 3
+Test accuracy: 0.39033201445036986
+Test loss: 2.944292761958612
+size num is 2 accuracy is 9
+Test accuracy: 0.6118470095762372
+Test loss: 1.5816060680384951
+size num is 1 accuracy is 8
+Test accuracy: 0.49985664315614425
+Test loss: 2.10692413898388
+size num is 4 accuracy is 7
+Test accuracy: 0.6221113595963071
+Test loss: 1.601185006747637
+size num is 1 accuracy is 6
+Test accuracy: 0.4815643098801537
+Test loss: 2.3836048245603223
+size num is 3 accuracy is 1
+Test accuracy: 0.2628591088938586
+Test loss: 3.4717918459924935
+size num is 3 accuracy is 9
+Test accuracy: 0.671884855783015
+Test loss: 1.2780773997280752
+size num is 5 accuracy is 7
+Test accuracy: 0.6377659269453524
+Test loss: 1.4399963973488241
+size num is 3 accuracy is 3
+Test accuracy: 0.3858019381845289
+Test loss: 2.888031053415391
+size num is 2 accuracy is 8
+Test accuracy: 0.5672917025058777
+Test loss: 1.8135939366483291
+size num is 6 accuracy is 7
+Test accuracy: 0.6473995068524572
+Test loss: 1.4162916053675954
+size num is 4 accuracy is 1
+Test accuracy: 0.2486954527209129
+Test loss: 3.560353381574513
+size num is 4 accuracy is 9
+Test accuracy: 0.6731463960089454
+Test loss: 1.227617493988794
+size num is 2 accuracy is 6
+Test accuracy: 0.5435518091633694
+Test loss: 2.0273995103070632
+size num is 7 accuracy is 7
+Test accuracy: 0.6601869373243878
+Test loss: 1.3963760246605943
+size num is 4 accuracy is 3
+Test accuracy: 0.37502150352657837
+Test loss: 2.9448963686523926
+size num is 3 accuracy is 8
+Test accuracy: 0.6356442456562876
+Test loss: 1.5450992385180478
+size num is 5 accuracy is 9
+Test accuracy: 0.7078960949595734
+Test loss: 1.130248907895976
+size num is 5 accuracy is 1
+Test accuracy: 0.23527725213601697
+Test loss: 3.618047843430487
+size num is 8 accuracy is 7
+Test accuracy: 0.6774471013246173
+Test loss: 1.2974675992894478
+size num is 3 accuracy is 6
+Test accuracy: 0.5526693044325937
+Test loss: 1.9340029215261336
+size num is 9 accuracy is 7
+Test accuracy: 0.6768163312116521
+Test loss: 1.3250258919221325
+size num is 4 accuracy is 8
+Test accuracy: 0.6651184127530249
+Test loss: 1.3155395171337452
+size num is 5 accuracy is 3
+Test accuracy: 0.37387464877573257
+Test loss: 2.9047628852668312
+size num is 6 accuracy is 9
+Test accuracy: 0.7069212684213544
+Test loss: 1.0802795761740054
+size num is 6 accuracy is 1
+Test accuracy: 0.17862262744423418
+Test loss: 3.8899292595958976
+size num is 4 accuracy is 6
+Test accuracy: 0.5762945123000172
+Test loss: 1.7825794510859991
+size num is 1 accuracy is 5
+Test accuracy: 0.42382017317506737
+Test loss: 2.735680961530988
+size num is 5 accuracy is 8
+Test accuracy: 0.6589253970984574
+Test loss: 1.2967124449898877
+size num is 7 accuracy is 9
+Test accuracy: 0.7189632433052354
+Test loss: 1.044650522199838
+size num is 7 accuracy is 1
+Test accuracy: 0.20144503698606572
+Test loss: 3.7721316552757225
+size num is 6 accuracy is 3
+Test accuracy: 0.4071334365502609
+Test loss: 2.742537279875052
+size num is 1 accuracy is 4
+Test accuracy: 0.4052411262113653
+Test loss: 2.6793142865648507
+size num is 5 accuracy is 6
+Test accuracy: 0.594414817363381
+Test loss: 1.6839676445810872
+size num is 8 accuracy is 9
+Test accuracy: 0.7211996100693847
+Test loss: 1.0309595569440426
+size num is 6 accuracy is 8
+Test accuracy: 0.6872527094443489
+Test loss: 1.2019560975303214
+size num is 7 accuracy is 3
+Test accuracy: 0.3989334250817134
+Test loss: 2.757132108200058
+size num is 8 accuracy is 1
+Test accuracy: 0.16812890647399506
+Test loss: 3.910161082504545
+size num is 6 accuracy is 6
+Test accuracy: 0.6066861631974311
+Test loss: 1.664013507871996
+size num is 9 accuracy is 9
+Test accuracy: 0.7249268880096336
+Test loss: 1.0371060691990794
+size num is 7 accuracy is 8
+Test accuracy: 0.6908079591719709
+Test loss: 1.1713006423630234
+size num is 9 accuracy is 1
+Test accuracy: 0.17804920006881128
+Test loss: 3.9719522754790497
+size num is 8 accuracy is 3
+Test accuracy: 0.4130397385171168
+Test loss: 2.661569232405134
+size num is 7 accuracy is 6
+Test accuracy: 0.6206777911577499
+Test loss: 1.5967487642935574
+size num is 8 accuracy is 8
+Test accuracy: 0.7050289580824589
+Test loss: 1.1060514401352872
+size num is 9 accuracy is 3
+Test accuracy: 0.4189460404839727
+Test loss: 2.639956833433244
+size num is 8 accuracy is 6
+Test accuracy: 0.6036469981076896
+Test loss: 1.6522853783170677
+size num is 9 accuracy is 8
+Test accuracy: 0.7139170824015139
+Test loss: 1.070183543227032
+size num is 2 accuracy is 5
+Test accuracy: 0.4866678135214175
+Test loss: 2.2552222979063714
+size num is 9 accuracy is 6
+Test accuracy: 0.6213659040082573
+Test loss: 1.5753113511193289
+size num is 2 accuracy is 4
+Test accuracy: 0.43150410000573425
+Test loss: 2.565423533213304
+size num is 3 accuracy is 5
+Test accuracy: 0.5358678823327025
+Test loss: 1.9825744243218497
+size num is 3 accuracy is 4
+Test accuracy: 0.4756006651757555
+Test loss: 2.424518814087881
+size num is 4 accuracy is 4
+Test accuracy: 0.4617810654280635
+Test loss: 2.4237249283372653
+size num is 4 accuracy is 5
+Test accuracy: 0.5491713974425139
+Test loss: 2.05848003787479
+size num is 5 accuracy is 5
+Test accuracy: 0.5628763117151213
+Test loss: 1.9045790122143509
+size num is 5 accuracy is 4
+Test accuracy: 0.47043981879694935
+Test loss: 2.3790001686605473
+size num is 6 accuracy is 5
+Test accuracy: 0.5670623315557085
+Test loss: 1.865815449878695
+size num is 6 accuracy is 4
+Test accuracy: 0.5040426629967315
+Test loss: 2.2430335959626335
+size num is 7 accuracy is 4
+Test accuracy: 0.48047479786685016
+Test loss: 2.339636604191588
+size num is 7 accuracy is 5
+Test accuracy: 0.5590343482997878
+Test loss: 1.8584761309304274
+size num is 8 accuracy is 4
+Test accuracy: 0.4768622054016859
+Test loss: 2.372298157628224
+size num is 8 accuracy is 5
+Test accuracy: 0.5690119846321463
+Test loss: 1.8349761848333674
+size num is 9 accuracy is 4
+Test accuracy: 0.48924823671082057
+Test loss: 2.1863881509301355
+size num is 9 accuracy is 5
+Test accuracy: 0.5602958885257182
+Test loss: 1.8600801091657106
+size num is 0 accuracy is 2
+Test accuracy: 0.3688858306095533
+Test loss: 3.207968973458783
+size num is 0 accuracy is 10
+Test accuracy: 0.3683697459716727
+Test loss: 3.105770934314809
+size num is 1 accuracy is 2
+Test accuracy: 0.3236997534262286
+Test loss: 3.230928705645536
+size num is 2 accuracy is 2
+Test accuracy: 0.32152072939962156
+Test loss: 3.2132970243098806
+size num is 1 accuracy is 10
+Test accuracy: 0.5513504214691209
+Test loss: 1.8262774063753584
+size num is 2 accuracy is 10
+Test accuracy: 0.6496932163541488
+Test loss: 1.345013409480829
+size num is 3 accuracy is 10
+Test accuracy: 0.6968862893514537
+Test loss: 1.124350001735934
+size num is 4 accuracy is 10
+Test accuracy: 0.7241240896840415
+Test loss: 1.014039758684704
+size num is 5 accuracy is 10
+Test accuracy: 0.73134927461437
+Test loss: 0.9812268447158163
+size num is 6 accuracy is 10
+Test accuracy: 0.7505590916910373
+Test loss: 0.902423541726414
+size num is 7 accuracy is 10
+Test accuracy: 0.724238775159126
+Test loss: 1.0013231618441731
+size num is 8 accuracy is 10
+Test accuracy: 0.681747806640289
+Test loss: 1.1615412784424963
+size num is 9 accuracy is 10
+Test accuracy: 0.7583577039967888
+Test loss: 0.902620056486211
+size num is 0 accuracy is 2
+Test accuracy: 0.38373759963300647
+Test loss: 3.239999113726656
+size num is 1 accuracy is 2
+Test accuracy: 0.3278857732668158
+Test loss: 3.2366491504838852
+size num is 2 accuracy is 2
+Test accuracy: 0.30678364585125295
+Test loss: 3.309742927220455
+size num is 3 accuracy is 2
+Test accuracy: 0.30334308159871554
+Test loss: 3.3238052595165914
+size num is 4 accuracy is 2
+Test accuracy: 0.2861976030735707
+Test loss: 3.33235641046621
+size num is 5 accuracy is 2
+Test accuracy: 0.2922185905155112
+Test loss: 3.3591022635767085
+size num is 6 accuracy is 2
+Test accuracy: 0.26658638683410746
+Test loss: 3.4194679359882296
+size num is 7 accuracy is 2
+Test accuracy: 0.2620563105682665
+Test loss: 3.4471286236199514
+size num is 8 accuracy is 2
+Test accuracy: 0.26377659269453524
+Test loss: 3.434824519588786
+size num is 9 accuracy is 2
+Test accuracy: 0.2439933482424451
+Test loss: 3.4880989840424763

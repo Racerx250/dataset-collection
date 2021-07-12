@@ -113,7 +113,7 @@ class NNFilter(FilterStrategy):
 
         optimizer = torch.optim.Adam(model.parameters(), lr=2e-4, weight_decay=1e-5)
         criterion = nn.CrossEntropyLoss()
-        model = model.cuda()
+        model = model.to('cuda')
 
         train_custom.train_model(model, train_loader, val_loader, test_loader, 30, 
                 optimizer, criterion, 3, True, self.loopNum, sizeNum)
@@ -176,12 +176,12 @@ if __name__ == '__main__':
     # print(ic_dataset.get_icdataset('dataset_dogs_large'))
     # dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_dogs_large', train_perc=0.85)
     if (os.path.isfile('dataset.pkl')) :
-       with open('dataset.pkl', 'rb') as output:  # Overwrites any existing file.
+        with open('dataset.pkl', 'rb') as input:
             dataset = pickle.load(input)
-       with open('dataset.pkl', 'rb') as output:  # Overwrites any existing file.
+        with open('test_set.pkl', 'rb') as input:
             test_set = pickle.load(input)
     else :
-        dataset, test_set = ic_dataset.get_icdataset_train_test('D:/github/classifier/Images', train_perc=0.85)
+        dataset, test_set = ic_dataset.get_icdataset_train_test('/data/Images', train_perc=0.85)
         with open('dataset.pkl', 'wb') as output:
             pickle.dump(dataset, output, pickle.HIGHEST_PROTOCOL)
         with open('test_set.pkl', 'wb') as output:
