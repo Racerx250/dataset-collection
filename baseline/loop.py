@@ -107,16 +107,19 @@ class NNFilter(FilterStrategy):
         test_set.transform = test_transform
         print(test_set.dataset.transform)
         '''
-        train_loader = DataLoader(train_set, shuffle=True, batch_size = 32, num_workers=4, drop_last = True)
+
+        with open("config.json", "r") as jsonfile:
+            configData = json.load(jsonfile)
+        train_loader = DataLoader(train_set, shuffle=True, batch_size = configData['batch_size'], num_workers=configData['num_workers'], drop_last = True)
         val_loader =  DataLoader(val_set, shuffle=False, num_workers=4)
         test_loader = DataLoader(self.test_set, shuffle=False, num_workers=4)
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=2e-4, weight_decay=1e-5)
+        optimizer = torch.optim.Adam(model.parameters(), lr=configData['lr'], weight_decay=configData['weight_decay'])
         criterion = nn.CrossEntropyLoss()
-        model = model.cuda()
+        model = model.to('cuda')
 
-        train_custom.train_model(model, train_loader, val_loader, test_loader, 30, 
-                optimizer, criterion, 3, True, self.loopNum, sizeNum)
+        train_custom.train_model(model, train_loader, val_loader, test_loader, configData['epoch'], 
+                optimizer, criterion, configData['patience'], True, self.loopNum, sizeNum)
         del train_set
         del val_set
         del train_loader
@@ -176,12 +179,12 @@ if __name__ == '__main__':
     # print(ic_dataset.get_icdataset('dataset_dogs_large'))
     # dataset, test_set = ic_dataset.get_icdataset_train_test('dataset_dogs_large', train_perc=0.85)
     if (os.path.isfile('dataset.pkl')) :
-       with open('dataset.pkl', 'rb') as output:  # Overwrites any existing file.
+        with open('dataset.pkl', 'rb') as input:
             dataset = pickle.load(input)
-       with open('dataset.pkl', 'rb') as output:  # Overwrites any existing file.
+        with open('test_set.pkl', 'rb') as input:
             test_set = pickle.load(input)
     else :
-        dataset, test_set = ic_dataset.get_icdataset_train_test('D:/github/classifier/Images', train_perc=0.85)
+        dataset, test_set = ic_dataset.get_icdataset_train_test('/data/classifier/Images', train_perc=0.85)
         with open('dataset.pkl', 'wb') as output:
             pickle.dump(dataset, output, pickle.HIGHEST_PROTOCOL)
         with open('test_set.pkl', 'wb') as output:
