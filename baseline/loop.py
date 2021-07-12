@@ -184,7 +184,9 @@ if __name__ == '__main__':
         with open('test_set.pkl', 'rb') as input:
             test_set = pickle.load(input)
     else :
-        dataset, test_set = ic_dataset.get_icdataset_train_test('/data/classifier/Images', train_perc=0.85)
+        with open("config.json", "r") as jsonfile:
+            configData = json.load(jsonfile)
+        dataset, test_set = ic_dataset.get_icdataset_train_test(configData['dataPath'], train_perc=0.85)
         with open('dataset.pkl', 'wb') as output:
             pickle.dump(dataset, output, pickle.HIGHEST_PROTOCOL)
         with open('test_set.pkl', 'wb') as output:

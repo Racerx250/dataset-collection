@@ -1,4 +1,5 @@
 {
+    "dataPath" : "/data/classifier/Images",
     "epoch": 50,
     "patience": 5,
     "lr": 2e-4,
