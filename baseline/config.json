@@ -1,9 +1,10 @@
 {
-    "dataPath" : "/data/classifier/Images",
+    "dataPath" : "/data/Images",
     "epoch": 50,
     "patience": 5,
     "lr": 2e-4,
     "weight_decay": 1e-5,
     "batch_size": 32,
-    "num_workers": 4
+    "num_workers": 4,
+    "graphToggle": false
   }

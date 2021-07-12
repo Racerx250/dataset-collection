@@ -119,7 +119,7 @@ class NNFilter(FilterStrategy):
         model = model.to('cuda')
 
         train_custom.train_model(model, train_loader, val_loader, test_loader, configData['epoch'], 
-                optimizer, criterion, configData['patience'], True, self.loopNum, sizeNum)
+                optimizer, criterion, configData['patience'], True, self.loopNum, sizeNum, configData['graphToggle'])
         del train_set
         del val_set
         del train_loader

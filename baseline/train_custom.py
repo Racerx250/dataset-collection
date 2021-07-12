@@ -46,7 +46,7 @@ def graph(val_loss, train_loss, label, loopNum, sizeNum):
     plt.close(fig)
 
 def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs, optimizer, 
-        criterion, patience, test_model, loopNum, sizeNum) :
+        criterion, patience, test_model, loopNum, sizeNum, graphToggle) :
     loss_increase = 0
     train_loss_total = []
     val_loss_total = []
@@ -133,8 +133,9 @@ def train_model(model, train_dataloader, val_dataloader, test_dataloader, epochs
             loss_increase = 0
 
     # graph train/validation loss and accuracy
-    graph(val_loss_total, train_loss_total, "loss", loopNum, sizeNum)
-    graph(valid_acc_total, train_acc_total, "acc", loopNum, sizeNum)
+    if (graphToggle) :
+        graph(val_loss_total, train_loss_total, "loss", loopNum, sizeNum)
+        graph(valid_acc_total, train_acc_total, "acc", loopNum, sizeNum)
     
     if (test_model) :
         model = model.eval()
